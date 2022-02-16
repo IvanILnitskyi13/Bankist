@@ -35,6 +35,8 @@ const account4 = {
 
 const accounts = [account1, account2, account3, account4];
 
+const transferTime = ['today', '1 day ago', '2 days ago', '3 days ago'];
+
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -61,6 +63,35 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const displayMovements = function (movements) {
+  containerMovements.innerHTML = '';
+
+  movements.forEach((mov, i) => {
+    const type = mov > 0 ? 'deposit' : 'withdrawal';
+    const date = new Date();
+    let movementsDate;
+
+    if (i >= movements.length - 4) {
+      movementsDate = transferTime.at(movements.length - (i + 1));
+    } else {
+      date.setDate(date.getDate() - (movements.length - i));
+      movementsDate =
+        date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+    }
+
+    const html = `
+    <div class="movements__row">
+      <div class="movements__type movements__type--${type}">
+      ${i + 1} ${type}</div>
+      <div class="movements__date">${movementsDate}</div>
+      <div class="movements__value">${mov}€</div>
+    </div>`;
+
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
+
+displayMovements(account1.movements);
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
@@ -74,3 +105,9 @@ const currencies = new Map([
 const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 /////////////////////////////////////////////////
+
+account1.movements.forEach(element => {
+  const movementsRow = document.createElement('div');
+});
+
+containerMovements.appendChild;
