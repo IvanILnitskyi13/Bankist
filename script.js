@@ -93,6 +93,35 @@ const displayMovements = function (movements) {
 
 displayMovements(account1.movements);
 
+const calcAndPrintBalance = movements => {
+  const currentBalance = movements.reduce((acc, cur) => acc + cur, 0);
+  labelBalance.innerHTML = `${currentBalance} €`;
+};
+
+const calcDisplaySummary = movements => {
+  const incomes = movements
+    .filter(movement => movement > 0)
+    .reduce((acc, cur) => acc + cur, 0);
+
+  labelSumIn.textContent = `${incomes} €`;
+
+  const outcomes = movements
+    .filter(movement => movement < 0)
+    .reduce((acc, cur) => acc + cur, 0);
+
+  labelSumOut.textContent = `${outcomes} €`;
+
+  const interest = movements
+    .filter(movement => movement > 0)
+    .map(deposit => (deposit * 1.2) / 100)
+    .filter(int => int >= 1)
+    .reduce((acc, cur) => acc + cur, 0);
+
+  labelSumInterest.textContent = `${interest} €`;
+};
+
+calcDisplaySummary(account1.movements);
+
 const createUserNames = accounts => {
   accounts.forEach(account => {
     account.username = account.owner
@@ -103,9 +132,11 @@ const createUserNames = accounts => {
   });
 };
 
+calcAndPrintBalance(account1.movements);
 createUserNames(accounts);
 
 console.log(accounts);
+
 /////////////////////////////////////////////////
 
 // const currencies = new Map([
@@ -114,5 +145,7 @@ console.log(accounts);
 //   ['GBP', 'Pound sterling'],
 // ]);
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /////////////////////////////////////////////////
+
+console.log(movements.reduce((maxNumber, cur) => Math.max(maxNumber, cur), 0));
