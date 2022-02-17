@@ -92,22 +92,27 @@ const displayMovements = function (movements) {
 };
 
 displayMovements(account1.movements);
+
+const createUserNames = accounts => {
+  accounts.forEach(account => {
+    account.username = account.owner
+      .toLowerCase()
+      .split(' ')
+      .map(element => element.at(0))
+      .join('');
+  });
+};
+
+createUserNames(accounts);
+
+console.log(accounts);
 /////////////////////////////////////////////////
+
+// const currencies = new Map([
+//   ['USD', 'United States dollar'],
+//   ['EUR', 'Euro'],
+//   ['GBP', 'Pound sterling'],
+// ]);
+
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /////////////////////////////////////////////////
-// LECTURES
-
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
-
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-
-/////////////////////////////////////////////////
-
-account1.movements.forEach(element => {
-  const movementsRow = document.createElement('div');
-});
-
-containerMovements.appendChild;
