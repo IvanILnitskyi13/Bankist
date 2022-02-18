@@ -190,6 +190,22 @@ btnTransfer.addEventListener('click', e => {
 
   updateUI();
 });
+
+btnClose.addEventListener('click', e => {
+  e.preventDefault();
+
+  const username = inputCloseUsername.value;
+  const pin = +inputClosePin.value;
+
+  if (username === currentAccount.username && pin === currentAccount.pin) {
+    const index = accounts.findIndex(
+      acc => acc.username === currentAccount.username
+    );
+    accounts.splice(index, 1);
+    containerApp.style.opacity = 0;
+  }
+  inputCloseUsername.value = inputClosePin.value = '';
+});
 /////////////////////////////////////////////////
 
 // const currencies = new Map([
