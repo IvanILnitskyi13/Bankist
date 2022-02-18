@@ -91,27 +91,27 @@ const displayMovements = function (movements) {
   });
 };
 
-const calcAndPrintBalance = movements => {
-  const currentBalance = movements.reduce((acc, cur) => acc + cur, 0);
-  labelBalance.innerHTML = `${currentBalance} €`;
+const calcAndPrintBalance = account => {
+  account.balance = account.movements.reduce((acc, cur) => acc + cur, 0);
+  labelBalance.innerHTML = `${account.balance} €`;
 };
 
-const calcDisplaySummary = (movements, interestRate) => {
-  const incomes = movements
+const calcDisplaySummary = account => {
+  const incomes = account.movements
     .filter(movement => movement > 0)
     .reduce((acc, cur) => acc + cur, 0);
 
   labelSumIn.textContent = `${incomes} €`;
 
-  const outcomes = movements
+  const outcomes = account.movements
     .filter(movement => movement < 0)
     .reduce((acc, cur) => acc + cur, 0);
 
   labelSumOut.textContent = `${outcomes} €`;
 
-  const interest = movements
+  const interest = account.movements
     .filter(movement => movement > 0)
-    .map(deposit => (deposit * interestRate) / 100)
+    .map(deposit => (deposit * account.interestRate) / 100)
     .filter(int => int >= 1)
     .reduce((acc, cur) => acc + cur, 0);
 
@@ -130,11 +130,18 @@ const createUserNames = accounts => {
 
 createUserNames(accounts);
 
+const updateUI = () => {
+  displayMovements(currentAccount.movements);
+  calcAndPrintBalance(currentAccount);
+  calcDisplaySummary(currentAccount);
+};
+
 // Event handler
 let currentAccount;
 
 btnLogin.addEventListener('click', e => {
   e.preventDefault();
+
   currentAccount = accounts.find(
     account => account.username === inputLoginUsername.value
   );
@@ -150,17 +157,39 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
-    // Display movement
-    displayMovements(currentAccount.movements);
-
-    // Display balance
-    calcAndPrintBalance(currentAccount.movements);
-
-    // Display summary
-    calcDisplaySummary(currentAccount.movements, currentAccount.interestRate);
+    updateUI();
   }
 });
 
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+
+  const transferAmount = +inputTransferAmount.value;
+  const receiverAcc = accounts.find(
+    account => account.username === inputTransferTo.value
+  );
+
+  if (
+    transferAmount > 0 &&
+    receiverAcc &&
+    receiverAcc !== currentAccount &&
+    transferAmount <= currentAccount.balance
+  ) {
+    currentAccount.movements.push(-transferAmount);
+    receiverAcc.movements.push(transferAmount);
+  } else if (!receiverAcc) {
+    alert('User with that username does not exist');
+  } else if (receiverAcc === currentAccount) {
+    alert("Your can't transfer money to yourself");
+  } else {
+    alert('Your balance is too low');
+  }
+
+  // Clear input fields
+  inputTransferAmount.value = inputTransferTo.value = '';
+
+  updateUI();
+});
 /////////////////////////////////////////////////
 
 // const currencies = new Map([
