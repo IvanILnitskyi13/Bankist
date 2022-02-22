@@ -88,7 +88,7 @@ const displayMovements = function (movements, sort = false) {
       <div class="movements__type movements__type--${type}">
       ${i + 1} ${type}</div>
       <div class="movements__date">${movementsDate}</div>
-      <div class="movements__value">${mov}€</div>
+      <div class="movements__value">${mov.toFixed(2)}€</div>
     </div>`;
 
     containerMovements.insertAdjacentHTML('afterbegin', html);
@@ -97,7 +97,7 @@ const displayMovements = function (movements, sort = false) {
 
 const calcAndPrintBalance = account => {
   account.balance = account.movements.reduce((acc, cur) => acc + cur, 0);
-  labelBalance.innerHTML = `${account.balance} €`;
+  labelBalance.innerHTML = `${account.balance.toFixed(2)} €`;
 };
 
 const calcDisplaySummary = account => {
@@ -105,13 +105,13 @@ const calcDisplaySummary = account => {
     .filter(movement => movement > 0)
     .reduce((acc, cur) => acc + cur, 0);
 
-  labelSumIn.textContent = `${incomes} €`;
+  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
 
   const outcomes = account.movements
     .filter(movement => movement < 0)
     .reduce((acc, cur) => acc + cur, 0);
 
-  labelSumOut.textContent = `${outcomes} €`;
+  labelSumOut.textContent = `${outcomes.toFixed(2)} €`;
 
   const interest = account.movements
     .filter(movement => movement > 0)
@@ -119,7 +119,7 @@ const calcDisplaySummary = account => {
     .filter(int => int >= 1)
     .reduce((acc, cur) => acc + cur, 0);
 
-  labelSumInterest.textContent = `${interest} €`;
+  labelSumInterest.textContent = `${interest.toFixed(2)} €`;
 };
 
 const createUserNames = accounts => {
@@ -197,8 +197,7 @@ btnTransfer.addEventListener('click', e => {
 
 btnLoan.addEventListener('click', e => {
   e.preventDefault();
-
-  const amount = +inputLoanAmount.value;
+  const amount = Math.round(inputLoanAmount.value * 100) / 100;
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
     currentAccount.movements.push(amount);
