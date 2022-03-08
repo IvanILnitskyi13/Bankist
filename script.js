@@ -117,6 +117,31 @@ const transferTime = [
   '3 days ago',
 ];
 
+const startLogOutTimer = () => {
+  const tick = () => {
+    let min = Math.trunc(time / 60)
+      .toString()
+      .padStart(2, 0);
+    let sec = (time % 60).toString().padStart(2, 0);
+
+    labelTimer.textContent = `${min}:${sec}`;
+
+    if (time === 0) {
+      clearInterval(timer);
+      labelWelcome.textContent = `Log in to get started`;
+      containerApp.style.opacity = 0;
+    }
+
+    time--;
+  };
+
+  let time = 120;
+
+  tick();
+  const timer = setInterval(tick, 1000);
+  return timer;
+};
+
 const getTransferTimeStrategy = date => {
   const now = new Date();
   const transferDate = new Date(date);
@@ -238,7 +263,7 @@ const updateUI = () => {
 };
 
 // Event handler
-let currentAccount;
+let currentAccount, timer;
 
 // * FAKE ALWAYS LOGGED IN
 // currentAccount = account1;
@@ -276,6 +301,8 @@ btnLogin.addEventListener('click', e => {
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
 
+    timer && clearTimeout(timer);
+    timer = startLogOutTimer();
     updateUI();
   }
 });
@@ -308,6 +335,9 @@ btnTransfer.addEventListener('click', e => {
 
   inputTransferAmount.value = inputTransferTo.value = '';
   updateUI();
+
+  clearInterval(timer);
+  timer = startLogOutTimer();
 });
 
 btnLoan.addEventListener('click', e => {
@@ -315,10 +345,17 @@ btnLoan.addEventListener('click', e => {
   const amount = Math.round(inputLoanAmount.value * 100) / 100;
 
   if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    currentAccount.movements.push(amount);
-    currentAccount.transferDate.push(getFormattedDate(new Date()));
-    inputLoanAmount.value = '';
-    updateUI(currentAccount);
+    setTimeout(() => {
+      currentAccount.movements.push(amount);
+      currentAccount.transferDate.push(getFormattedDate(new Date()));
+      inputLoanAmount.value = '';
+
+      updateUI(currentAccount);
+
+      // Reset timer
+      clearInterval(timer);
+      timer = startLogOutTimer();
+    }, 2500);
   }
 });
 
@@ -343,13 +380,3 @@ btnSort.addEventListener('click', e => {
   sortedState = !sortedState;
   displayMovements(currentAccount, sortedState);
 });
-/////////////////////////////////////////////////
-
-// const currencies = new Map([
-//   ['USD', 'United States dollar'],
-//   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'],
-// ]);
-
-//const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
-/////////////////////////////////////////////////
